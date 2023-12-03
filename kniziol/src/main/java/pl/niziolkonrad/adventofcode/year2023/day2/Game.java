@@ -1,14 +1,16 @@
 package pl.niziolkonrad.adventofcode.year2023.day2;
 
+import java.util.Comparator;
+import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.regex.MatchResult;
 import java.util.regex.Pattern;
 
 public class Game {
 
-    public static final String BLUE_REG_EXP = "[0-9]{1,3} blue";
-    public static final String RED_REG_EXP = "[0-9]{1,3} red";
-    public static final String GREEN_REG_EXP = "[0-9]{1,3} green";
+    public static final String BLUE_REG_EXP = "([0-9]{1,3}) blue";
+    public static final String RED_REG_EXP = "([0-9]{1,3}) red";
+    public static final String GREEN_REG_EXP = "([0-9]{1,3}) green";
     private final int gameNumber;
     private final int numberOfGreenCubes;
     private final int numberOfRedCubes;
@@ -23,17 +25,11 @@ public class Game {
     }
 
     private int getMaxNumber(final String line, final String regExp) {
-        final Pattern pattern = Pattern.compile(regExp);
-        AtomicInteger maxNumber = new AtomicInteger();
-        pattern.matcher(line).results()
-                .map(MatchResult::group)
-                .map(s -> s.trim().split("\\s")[0])
-                .forEach(s -> {
-                    if (maxNumber.get() < Integer.parseInt(s)) {
-                        maxNumber.set(Integer.parseInt(s));
-                    }
-                });
-        return maxNumber.get();
+        return Pattern.compile(regExp).matcher(line)
+                .results()
+                .map(s -> Integer.valueOf(s.group(1)))
+                .max(Comparator.naturalOrder())
+                .orElse(0);
     }
 
     boolean containedOnly(final int red, final int blue, final int green) {
